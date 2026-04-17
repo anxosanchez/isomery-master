@@ -27,7 +27,7 @@
     "@tailwindcss/postcss": "^4.2.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
@@ -35,12 +35,7 @@
     "globals": "^17.4.0",
     "postcss": "^8.5.10",
     "tailwindcss": "^4.2.2",
-    "vite": "^8.0.4",
+    "vite": "^6.2.0",
     "gh-pages": "^6.3.0"
-  },
-  "optionalDependencies": {
-    "@rolldown/binding-linux-x64-gnu": "1.0.0-rc.15",
-    "@rolldown/binding-darwin-arm64": "1.0.0-rc.15",
-    "@rolldown/binding-darwin-x64": "1.0.0-rc.15"
   }
 }
