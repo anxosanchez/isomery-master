@@ -18,7 +18,9 @@ import {
   Fingerprint,
   FileCode2,
   Image as ImageIcon,
-  Languages
+  Languages,
+  Hexagon,
+  Combine
 } from 'lucide-react';
 import GlassPanel from './components/GlassPanel';
 import MoleculeViewer from './components/MoleculeViewer';
@@ -38,11 +40,11 @@ export default function App() {
 
   // Filter isomers based on selected group AND carbon count (if applicable)
   const filteredIsomers = useMemo(() => {
+    // Categories that use the carbon filter
     const needsCarbonFilter = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
     
     if (needsCarbonFilter) {
       const filtered = selectedGroup.isomers.filter(iso => iso.carbons === selectedCarbons);
-      // If no isomers for this carbon count, fallback to first available or show empty
       return filtered;
     }
     return selectedGroup.isomers;
@@ -53,6 +55,7 @@ export default function App() {
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
     setSelectedIsomerIndex(0);
+    
     // Automatically set a sensible carbon count if current one has no isomers in this group
     const availableCarbons = [...new Set(group.isomers.map(iso => iso.carbons))].filter(Boolean);
     if (availableCarbons.length > 0 && !availableCarbons.includes(selectedCarbons)) {
@@ -68,12 +71,25 @@ export default function App() {
 
   const showCarbonSelector = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
   
-  // Dynamically determine which carbon counts to show for the selected category
   const activeCarbonCounts = useMemo(() => {
     if (!selectedGroup) return [4, 5, 6];
     const counts = [...new Set(selectedGroup.isomers.map(iso => iso.carbons))].filter(Boolean).sort((a,b) => a-b);
     return counts.length > 0 ? counts : [4, 5, 6];
   }, [selectedGroup]);
+
+  // Map group IDs to specific icons
+  const getGroupIcon = (id) => {
+    switch(id) {
+      case 'estructural-cadea': return <Database size={16} />;
+      case 'estructural-posicion': return <Layers size={16} />;
+      case 'isomería-aromatica': return <Hexagon size={16} className="text-yellow-400" />;
+      case 'isomería-ciclica': return <Combine size={16} className="text-emerald-400" />;
+      case 'estereoisomeria-geometrica': return <Box size={16} />;
+      case 'estereoisomeria-optica': return <Dna size={16} />;
+      case 'isomería-conformacional': return <RotateCcw size={16} />;
+      default: return <Atom size={16} />;
+    }
+  };
 
   return (
     <div className="flex h-screen w-full bg-slate-950 text-slate-200 overflow-hidden font-sans">
@@ -100,7 +116,7 @@ export default function App() {
           <div className="flex flex-col gap-5">
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-600/20 rounded-xl">
+                <div className="p-2 bg-blue-600/20 rounded-xl shadow-lg ring-1 ring-blue-500/20">
                   <Atom className="text-blue-400" size={24} />
                 </div>
                 <div>
@@ -169,7 +185,7 @@ export default function App() {
                         : 'hover:bg-white/5 text-slate-400 border border-transparent'}
                     `}
                   >
-                    <Layers size={16} />
+                    {getGroupIcon(group.id)}
                     <span className="text-xs font-medium">{group.title[language]}</span>
                   </button>
                 ))}
@@ -181,19 +197,19 @@ export default function App() {
                 <h2 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3 px-2">
                   {t('chainLength')}
                 </h2>
-                <div className="flex flex-wrap gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
+                <div className="grid grid-cols-3 gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
                   {activeCarbonCounts.map((count) => (
                     <button
                       key={count}
                       onClick={() => handleCarbonSelect(count)}
                       className={`
-                        flex-1 min-w-[3rem] py-1.5 rounded-lg text-xs font-bold transition-all
+                        py-1.5 rounded-lg text-xs font-bold transition-all
                         ${selectedCarbons === count 
                           ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
                           : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}
                       `}
                     >
-                      {count === 8 ? 'C8 (Arom.)' : `C${count}`}
+                      C{count}
                     </button>
                   ))}
                 </div>
@@ -216,7 +232,7 @@ export default function App() {
                         : 'bg-white/5 border-transparent hover:border-white/10 text-slate-400'}
                     `}
                   >
-                    <div className="text-[13px] font-semibold break-words">{isomer.name[language]}</div>
+                    <div className="text-[13px] font-semibold break-words leading-tight">{isomer.name[language]}</div>
                     <div className="text-[10px] opacity-60 mt-0.5">{isomer.formula}</div>
                   </button>
                 ))}
@@ -309,7 +325,7 @@ export default function App() {
             <section className="space-y-6 animate-fade-in" key={selectedIsomer.id}>
               <div>
                 <h3 className="text-xl font-bold text-white mb-1 leading-tight">{selectedIsomer.name[language]}</h3>
-                <p className="text-xs font-medium text-blue-400 font-mono tracking-tight underline decoration-blue-500/30 underline-offset-4">
+                <p className="text-xs font-medium text-blue-400 font-mono tracking-wide underline decoration-blue-500/30 underline-offset-4">
                   {selectedIsomer.iupac}
                 </p>
               </div>
@@ -333,21 +349,33 @@ export default function App() {
               </div>
 
               <div className="space-y-4 pt-2">
-                <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
-                  <h4 className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-2">
-                    <Info size={14} className="text-blue-500" /> {t('description')}
-                  </h4>
-                  <p className="text-xs text-slate-400 leading-relaxed italic">
-                    {selectedIsomer.description?.[language] || selectedGroup.description?.[language]}
-                  </p>
-                </div>
+                {selectedIsomer.description?.[language] && (
+                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                    <h4 className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-2">
+                      <Info size={14} className="text-blue-500" /> {t('description')}
+                    </h4>
+                    <p className="text-xs text-slate-400 leading-relaxed italic">
+                      {selectedIsomer.description[language]}
+                    </p>
+                  </div>
+                )}
+                {!selectedIsomer.description?.[language] && selectedGroup.description?.[language] && (
+                   <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                    <h4 className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-2">
+                      <Info size={14} className="text-blue-500" /> {t('description')}
+                    </h4>
+                    <p className="text-xs text-slate-400 leading-relaxed italic">
+                      {selectedGroup.description[language]}
+                    </p>
+                  </div>
+                )}
               </div>
             </section>
           </div>
 
           <div className="mt-auto pt-6 flex flex-col gap-3">
              <a 
-              href={selectedIsomer.wikipediaUrl} 
+              href={selectedIsomer.wikipediaUrl || `https://en.wikipedia.org/wiki/${selectedIsomer.iupac}`} 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl transition-all shadow-lg shadow-blue-900/40 font-bold group text-sm"
