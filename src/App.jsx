@@ -38,12 +38,12 @@ export default function App() {
 
   // Filter isomers based on selected group AND carbon count (if applicable)
   const filteredIsomers = useMemo(() => {
-    // If the group has carbons specifically requested, filter them.
-    // Categories requested: chain, position, geometric
     const needsCarbonFilter = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
     
     if (needsCarbonFilter) {
-      return selectedGroup.isomers.filter(iso => iso.carbons === selectedCarbons);
+      const filtered = selectedGroup.isomers.filter(iso => iso.carbons === selectedCarbons);
+      // If no isomers for this carbon count, fallback to first available or show empty
+      return filtered;
     }
     return selectedGroup.isomers;
   }, [selectedGroup, selectedCarbons]);
@@ -53,6 +53,11 @@ export default function App() {
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
     setSelectedIsomerIndex(0);
+    // Automatically set a sensible carbon count if current one has no isomers in this group
+    const availableCarbons = [...new Set(group.isomers.map(iso => iso.carbons))].filter(Boolean);
+    if (availableCarbons.length > 0 && !availableCarbons.includes(selectedCarbons)) {
+      setSelectedCarbons(availableCarbons[0]);
+    }
     setMirrorMode(group.id === 'estereoisomeria-optica');
   };
 
@@ -62,6 +67,13 @@ export default function App() {
   };
 
   const showCarbonSelector = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
+  
+  // Dynamically determine which carbon counts to show for the selected category
+  const activeCarbonCounts = useMemo(() => {
+    if (!selectedGroup) return [4, 5, 6];
+    const counts = [...new Set(selectedGroup.isomers.map(iso => iso.carbons))].filter(Boolean).sort((a,b) => a-b);
+    return counts.length > 0 ? counts : [4, 5, 6];
+  }, [selectedGroup]);
 
   return (
     <div className="flex h-screen w-full bg-slate-950 text-slate-200 overflow-hidden font-sans">
@@ -96,7 +108,7 @@ export default function App() {
                     {t('appTitle')}
                   </h1>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <p className="text-[10px] text-slate-500 font-medium">
+                    <p className="text-[10px] text-slate-500 font-medium tracking-tight">
                       {t('copyright')}
                     </p>
                     <a 
@@ -169,19 +181,19 @@ export default function App() {
                 <h2 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3 px-2">
                   {t('chainLength')}
                 </h2>
-                <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
-                  {[4, 5, 6].map((count) => (
+                <div className="flex flex-wrap gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
+                  {activeCarbonCounts.map((count) => (
                     <button
                       key={count}
                       onClick={() => handleCarbonSelect(count)}
                       className={`
-                        flex-1 py-1.5 rounded-lg text-xs font-bold transition-all
+                        flex-1 min-w-[3rem] py-1.5 rounded-lg text-xs font-bold transition-all
                         ${selectedCarbons === count 
                           ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
                           : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}
                       `}
                     >
-                      C{count}
+                      {count === 8 ? 'C8 (Arom.)' : `C${count}`}
                     </button>
                   ))}
                 </div>
@@ -204,12 +216,12 @@ export default function App() {
                         : 'bg-white/5 border-transparent hover:border-white/10 text-slate-400'}
                     `}
                   >
-                    <div className="text-[13px] font-semibold">{isomer.name[language]}</div>
+                    <div className="text-[13px] font-semibold break-words">{isomer.name[language]}</div>
                     <div className="text-[10px] opacity-60 mt-0.5">{isomer.formula}</div>
                   </button>
                 ))}
                 {filteredIsomers.length === 0 && (
-                  <p className="px-2 text-xs text-slate-600 italic">No data for C{selectedCarbons}</p>
+                  <p className="px-2 text-xs text-slate-600 italic">No data selected.</p>
                 )}
               </div>
             </section>
@@ -321,13 +333,6 @@ export default function App() {
               </div>
 
               <div className="space-y-4 pt-2">
-                <div>
-                  <h4 className="text-[9px] text-slate-500 uppercase tracking-widest font-bold mb-2">{t('developedFormula')}</h4>
-                  <div className="text-xs font-mono text-purple-300 bg-purple-500/5 p-3 rounded-xl border border-purple-500/10 text-center">
-                    {selectedIsomer.developedFormula}
-                  </div>
-                </div>
-
                 <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
                   <h4 className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-2">
                     <Info size={14} className="text-blue-500" /> {t('description')}

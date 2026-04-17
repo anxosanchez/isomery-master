@@ -50,7 +50,12 @@ export const translations = {
     "cis-2-pentene": "cis-2-penteno",
     "trans-2-pentene": "trans-2-penteno",
     "cis-3-hexene": "cis-3-hexeno",
-    "trans-3-hexene": "trans-3-hexeno"
+    "trans-3-hexene": "trans-3-hexeno",
+    "o-xylene": "orto-xileno",
+    "m-xylene": "meta-xileno",
+    "p-xylene": "para-xileno",
+    "cis-1-2-dichlorocyclohexane": "cis-1,2-diclorociclohexano",
+    "trans-1-2-dichlorocyclohexane": "trans-1,2-diclorociclohexano"
   },
   en: {
     appTitle: "Isomery 3D",
@@ -103,6 +108,11 @@ export const translations = {
     "cis-2-pentene": "cis-2-pentene",
     "trans-2-pentene": "trans-2-pentene",
     "cis-3-hexene": "cis-3-hexene",
-    "trans-3-hexene": "trans-3-hexene"
+    "trans-3-hexene": "trans-3-hexene",
+    "o-xylene": "o-xylene",
+    "m-xylene": "m-xylene",
+    "p-xylene": "p-xylene",
+    "cis-1-2-dichlorocyclohexane": "cis-1,2-dichlorocyclohexane",
+    "trans-1-2-dichlorocyclohexane": "trans-1,2-dichlorocyclohexane"
   }
 };

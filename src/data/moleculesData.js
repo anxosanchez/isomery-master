@@ -15,7 +15,6 @@ export const isomerGroups = [
       en: 'Molecules with the same molecular formula but different arrangement of the carbon chain.'
     },
     isomers: [
-      // C4
       {
         id: 'n-butano', carbons: 4,
         name: { gl: 'Butano', en: 'Butane' },
@@ -24,8 +23,6 @@ export const isomerGroups = [
           { element: 'C', pos: [-1.5, 0, 0] }, { element: 'C', pos: [-0.5, 0.5, 0] }, { element: 'C', pos: [0.5, -0.5, 0] }, { element: 'C', pos: [1.5, 0, 0] },
           { element: 'H', pos: [-1.5, -1, 0] }, { element: 'H', pos: [-2, 0.5, 0.8] }, { element: 'H', pos: [-2, 0.5, -0.8] },
           { element: 'H', pos: [-0.5, 1.5, 0.5] }, { element: 'H', pos: [-0.3, 0.5, -1] },
-          { element: 'H', pos: [0.3, -0.5, 1] }, { element: 'H', pos: [0.5, -1.5, -0.5] },
-          { element: 'H', pos: [1.5, 1, 0] }, { element: 'H', pos: [2, -0.5, 0.8] }, { element: 'H', pos: [2, -0.5, -0.8] },
         ],
         bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 2, end: 3 }]
       },
@@ -35,11 +32,10 @@ export const isomerGroups = [
         iupac: '2-metilpropano', formula: 'C₄H₁₀', smiles: 'CC(C)C', cas: '75-28-5', pubchemCid: 6360,
         atoms: [
           { element: 'C', pos: [0, 0, 0] }, { element: 'C', pos: [1, 1, 0] }, { element: 'C', pos: [-1, 1, 0] }, { element: 'C', pos: [0, -1.3, 0] },
-          { element: 'H', pos: [0, 0, 1] }, { element: 'H', pos: [1.8, 1.2, 0.5] }, { element: 'H', pos: [1, 1.8, -0.5] }, { element: 'H', pos: [-1.8, 1.2, -0.5] },
+          { element: 'H', pos: [0, 0, 1] }, { element: 'H', pos: [1.8, 1.2, 0.5] },
         ],
         bonds: [{ start: 0, end: 1 }, { start: 0, end: 2 }, { start: 0, end: 3 }]
       },
-      // C5
       {
         id: 'n-pentane', carbons: 5,
         name: { gl: 'n-Pentano', en: 'n-Pentane' },
@@ -67,7 +63,6 @@ export const isomerGroups = [
         ],
         bonds: [{ start: 0, end: 1 }, { start: 0, end: 2 }, { start: 0, end: 3 }, { start: 0, end: 4 }]
       },
-      // C6
       {
         id: 'n-hexane', carbons: 6,
         name: { gl: 'n-Hexano', en: 'n-Hexane' },
@@ -76,15 +71,6 @@ export const isomerGroups = [
           { element: 'C', pos: [-2.5, 0.5, 0] }, { element: 'C', pos: [-1.5, -0.5, 0] }, { element: 'C', pos: [-0.5, 0.5, 0] }, { element: 'C', pos: [0.5, -0.5, 0] }, { element: 'C', pos: [1.5, 0.5, 0] }, { element: 'C', pos: [2.5, -0.5, 0] },
         ],
         bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 2, end: 3 }, { start: 3, end: 4 }, { start: 4, end: 5 }]
-      },
-      {
-        id: '2-methylpentane', carbons: 6,
-        name: { gl: '2-Metilpentano', en: '2-Methylpentane' },
-        iupac: '2-methylpentane', formula: 'C₆H₁₄', smiles: 'CCCC(C)C', cas: '107-83-5', pubchemCid: 7892,
-        atoms: [
-          { element: 'C', pos: [-1.5, 0, 0] }, { element: 'C', pos: [-0.5, 0.5, 0] }, { element: 'C', pos: [0.5, -0.5, 0] }, { element: 'C', pos: [1.5, 0.5, 0] }, { element: 'C', pos: [2.5, -0.5, 0] }, { element: 'C', pos: [-1.5, 1, 0] },
-        ],
-        bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 2, end: 3 }, { start: 3, end: 4 }, { start: 0, end: 5 }]
       }
     ]
   },
@@ -96,7 +82,6 @@ export const isomerGroups = [
       en: 'Molecules with the same chain and functional group, but the latter is in a different position.'
     },
     isomers: [
-      // C3 (Keep existing)
       {
         id: '1-propanol', carbons: 3,
         name: { gl: '1-Propanol', en: '1-Propanol' },
@@ -113,11 +98,9 @@ export const isomerGroups = [
         iupac: 'Propan-2-ol', formula: 'C₃H₈O', smiles: 'CC(C)O', cas: '67-63-0', pubchemCid: 3776,
         atoms: [
           { element: 'C', pos: [-1.2, -0.5, 0] }, { element: 'C', pos: [0, 0.3, 0] }, { element: 'C', pos: [1.2, -0.5, 0] }, { element: 'O', pos: [0, 1.5, 0] },
-          { element: 'H', pos: [0.5, 1.8, 0.6] },
         ],
-        bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 1, end: 3 }, { start: 3, end: 4 }]
+        bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 1, end: 3 }]
       },
-      // C4
       {
         id: '1-butanol', carbons: 4,
         name: { gl: '1-Butanol', en: '1-Butanol' },
@@ -136,24 +119,50 @@ export const isomerGroups = [
         ],
         bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 2, end: 3 }, { start: 1, end: 4 }]
       },
-      // C5
+      // Xylenes (Aromatic Position Isomers) - Using carbons: 8
       {
-        id: '1-pentanol', carbons: 5,
-        name: { gl: '1-Pentanol', en: '1-Pentanol' },
-        iupac: 'Pentan-1-ol', formula: 'C₅H₁₂O', smiles: 'CCCCCO', cas: '71-41-0', pubchemCid: 6276,
+        id: 'o-xylene', carbons: 8,
+        name: { gl: 'o-Xileno', en: 'o-Xylene' },
+        iupac: '1,2-dimethylbenzene', formula: 'C₈H₁₀', smiles: 'CC1=CC=CC=C1C', cas: '95-47-6', pubchemCid: 7237,
         atoms: [
-          { element: 'C', pos: [-2, 0, 0] }, { element: 'C', pos: [-1, 0.5, 0] }, { element: 'C', pos: [0, -0.5, 0] }, { element: 'C', pos: [1, 0.5, 0] }, { element: 'C', pos: [2, -0.5, 0] }, { element: 'O', pos: [3, 0, 0] },
+          { element: 'C', pos: [0.58, 0.69, 0] }, { element: 'C', pos: [0.58, -0.69, 0] }, { element: 'C', pos: [-0.62, 1.39, 0] }, { element: 'C', pos: [-0.62, -1.39, 0] },
+          { element: 'C', pos: [1.86, 1.46, 0] }, { element: 'C', pos: [1.86, -1.46, 0] }, { element: 'C', pos: [-1.83, 0.69, 0] }, { element: 'C', pos: [-1.83, -0.69, 0] },
         ],
-        bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 2, end: 3 }, { start: 3, end: 4 }, { start: 4, end: 5 }]
+        bonds: [
+          { start: 0, end: 1 }, { start: 0, end: 2, type: 2 }, { start: 0, end: 4 },
+          { start: 1, end: 3, type: 2 }, { start: 1, end: 5 }, { start: 2, end: 6 },
+          { start: 3, end: 7 }, { start: 6, end: 7, type: 2 }
+        ]
       },
       {
-        id: '2-pentanol', carbons: 5,
-        name: { gl: '2-Pentanol', en: '2-Pentanol' },
-        iupac: 'Pentan-2-ol', formula: 'C₅H₁₂O', smiles: 'CCCC(O)C', cas: '6032-29-7', pubchemCid: 22386,
+        id: 'm-xylene', carbons: 8,
+        name: { gl: 'm-Xileno', en: 'm-Xylene' },
+        iupac: '1,3-dimethylbenzene', formula: 'C₈H₁₀', smiles: 'CC1=CC(C)=CC=C1', cas: '108-38-3', pubchemCid: 7929,
         atoms: [
-          { element: 'C', pos: [-2, 0, 0] }, { element: 'C', pos: [-1, 0.5, 0] }, { element: 'C', pos: [0, -0.5, 0] }, { element: 'C', pos: [1, 0.5, 0] }, { element: 'C', pos: [2, -0.5, 0] }, { element: 'O', pos: [-1, 1.5, 0] },
+          { element: 'C', pos: [-0.00, 0.23, 0] }, { element: 'C', pos: [1.20, -0.46, 0] }, { element: 'C', pos: [-1.20, -0.46, 0] },
+          { element: 'C', pos: [1.20, -1.85, 0] }, { element: 'C', pos: [-1.20, -1.85, 0] }, { element: 'C', pos: [-0.00, -2.55, 0] },
+          { element: 'C', pos: [-0.00, 1.74, 0] }, { element: 'C', pos: [2.50, 0.28, 0] },
         ],
-        bonds: [{ start: 0, end: 1 }, { start: 1, end: 2 }, { start: 2, end: 3 }, { start: 3, end: 4 }, { start: 1, end: 5 }]
+        bonds: [
+          { start: 0, end: 1, type: 2 }, { start: 0, end: 2 }, { start: 0, end: 6 },
+          { start: 1, end: 3 }, { start: 1, end: 7 }, { start: 2, end: 4, type: 2 },
+          { start: 3, end: 5, type: 2 }, { start: 4, end: 5 }
+        ]
+      },
+      {
+        id: 'p-xylene', carbons: 8,
+        name: { gl: 'p-Xileno', en: 'p-Xylene' },
+        iupac: '1,4-dimethylbenzene', formula: 'C₈H₁₀', smiles: 'CC1=CC=C(C)C=C1', cas: '106-42-3', pubchemCid: 7809,
+        atoms: [
+          { element: 'C', pos: [0, 0.69, 0] }, { element: 'C', pos: [0, -0.69, 0] }, { element: 'C', pos: [1.20, 1.39, 0] }, 
+          { element: 'C', pos: [-1.20, -1.39, 0] }, { element: 'C', pos: [1.20, 2.78, 0] }, { element: 'C', pos: [-1.20, -2.78, 0] },
+          { element: 'C', pos: [2.41, 0.69, 0] }, { element: 'C', pos: [-2.41, -0.69, 0] },
+        ],
+        bonds: [
+          { start: 0, end: 1 }, { start: 0, end: 2, type: 2 }, { start: 1, end: 3, type: 2 },
+          { start: 2, end: 4 }, { start: 2, end: 6 }, { start: 3, end: 5 },
+          { start: 3, end: 7 }, { start: 6, end: 7, type: 2 }
+        ]
       }
     ]
   },
@@ -161,8 +170,8 @@ export const isomerGroups = [
     id: 'estereoisomeria-geometrica',
     title: { gl: 'Isomería Xeométrica', en: 'Geometric Isomerism' },
     description: {
-      gl: 'Diferente disposición espacial ao redor dun dobre enlace (ixidez).',
-      en: 'Different spatial arrangement around a double bond (rigidity).'
+      gl: 'Diferente disposición espacial ao redor dun dobre enlace ou ciclo (ixidez).',
+      en: 'Different spatial arrangement around a double bond or ring (rigidity).'
     },
     isomers: [
       {
@@ -183,23 +192,38 @@ export const isomerGroups = [
         ],
         bonds: [{ start: 0, end: 1, type: 2 }, { start: 0, end: 2 }, { start: 1, end: 3 }]
       },
+      // Cyclic Geometric Isomers (substituted cyclohexanes) - Using carbons: 6
       {
-        id: 'cis-2-pentene', carbons: 5,
-        name: { gl: 'cis-2-Penteno', en: 'cis-2-Pentene' },
-        iupac: '(Z)-pent-2-ene', formula: 'C₅H₁₀', smiles: 'CCC=CC', cas: '627-20-3', pubchemCid: 5326160,
+        id: 'cis-1-2-dichlorocyclohexane', carbons: 6,
+        name: { gl: 'cis-1,2-diclorociclohexano', en: 'cis-1,2-dichlorocyclohexane' },
+        iupac: 'cis-1,2-dichlorocyclohexane', formula: 'C₆H₁₀Cl₂', smiles: 'Cl[C@H]1CCCC[C@H]1Cl', cas: '610-57-1', pubchemCid: 66334,
         atoms: [
-          { element: 'C', pos: [-1.07, -0.18, 0] }, { element: 'C', pos: [0.03, -0.93, 0] }, { element: 'C', pos: [-1.89, 0.62, 0] }, { element: 'C', pos: [1.25, -0.43, 0] }, { element: 'C', pos: [2.2, 0.5, 0] },
+          { element: 'Cl', pos: [2.59, -0.63, 0.15] }, { element: 'Cl', pos: [0.71, 1.80, -1.02] },
+          { element: 'C', pos: [0.84, -0.51, 0.48] }, { element: 'C', pos: [0.35, 0.94, 0.50] },
+          { element: 'C', pos: [0.05, -1.38, -0.49] }, { element: 'C', pos: [-1.15, 0.99, 0.77] },
+          { element: 'C', pos: [-1.44, -1.31, -0.21] }, { element: 'C', pos: [-1.96, 0.11, -0.18] },
         ],
-        bonds: [{ start: 0, end: 1, type: 2 }, { start: 0, end: 2 }, { start: 1, end: 3 }, { start: 3, end: 4 }]
+        bonds: [
+          { start: 0, end: 2 }, { start: 1, end: 3 }, { start: 2, end: 3 },
+          { start: 2, end: 4 }, { start: 3, end: 5 }, { start: 4, end: 6 },
+          { start: 5, end: 7 }, { start: 6, end: 7 }
+        ]
       },
       {
-        id: 'trans-2-pentene', carbons: 5,
-        name: { gl: 'trans-2-Penteno', en: 'trans-2-Pentene' },
-        iupac: '(E)-pent-2-ene', formula: 'C₅H₁₀', smiles: 'CC=CCC', cas: '646-04-8', pubchemCid: 5326161,
+        id: 'trans-1-2-dichlorocyclohexane', carbons: 6,
+        name: { gl: 'trans-1,2-diclorociclohexano', en: 'trans-1,2-dichlorocyclohexane' },
+        iupac: 'trans-1,2-dichlorocyclohexane', formula: 'C₆H₁₀Cl₂', smiles: 'Cl[C@@H]1CCCC[C@H]1Cl', cas: '822-86-6', pubchemCid: 2723623,
         atoms: [
-          { element: 'C', pos: [1.35, 0.58, 0] }, { element: 'C', pos: [-0.04, 0.40, 0] }, { element: 'C', pos: [2.19, -0.66, 0] }, { element: 'C', pos: [-1.05, -0.07, 0] }, { element: 'C', pos: [-2.2, 0.8, 0] },
+          { element: 'Cl', pos: [2.03, 1.13, -0.75] }, { element: 'Cl', pos: [-2.03, 1.13, 0.75] },
+          { element: 'C', pos: [0.66, 0.90, 0.38] }, { element: 'C', pos: [-0.66, 0.90, -0.38] },
+          { element: 'C', pos: [0.87, -0.38, 1.19] }, { element: 'C', pos: [-0.87, -0.38, -1.19] },
+          { element: 'C', pos: [0.67, -1.65, 0.35] }, { element: 'C', pos: [-0.67, -1.65, -0.35] },
         ],
-        bonds: [{ start: 0, end: 1, type: 2 }, { start: 0, end: 2 }, { start: 1, end: 3 }, { start: 3, end: 4 }]
+        bonds: [
+          { start: 0, end: 2 }, { start: 1, end: 3 }, { start: 2, end: 3 },
+          { start: 2, end: 4 }, { start: 3, end: 5 }, { start: 4, end: 6 },
+          { start: 5, end: 7 }, { start: 6, end: 7 }
+        ]
       }
     ]
   },
