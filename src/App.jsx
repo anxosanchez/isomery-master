@@ -64,7 +64,8 @@ export default function App() {
   const filteredIsomers = useMemo(() => {
     if (!selectedGroup || !selectedGroup.isomers) return [];
     
-    const needsCarbonFilter = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
+    const groupId = selectedGroup.id || '';
+    const needsCarbonFilter = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(groupId);
     
     if (needsCarbonFilter) {
       const filtered = selectedGroup.isomers.filter(iso => iso.carbons === selectedCarbons);
@@ -91,7 +92,7 @@ export default function App() {
     setSelectedIsomerIndex(0);
   };
 
-  const showCarbonSelector = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
+  const showCarbonSelector = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup?.id || '');
   
   const activeCarbonCounts = useMemo(() => {
     if (!selectedGroup) return [4, 5, 6];
@@ -134,57 +135,57 @@ export default function App() {
         p-4 flex flex-col gap-4
       `}>
         <GlassPanel variant="heavy" className="flex-1 flex flex-col gap-6 overflow-hidden text-sm">
-          <div className="flex flex-col gap-5">
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-600/20 rounded-xl shadow-lg ring-1 ring-blue-500/20">
-                  <Atom className="text-blue-400" size={24} />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                    {t('appTitle')}
-                  </h1>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <p className="text-[10px] text-slate-500 font-medium tracking-tight">
-                      {t('copyright')}
-                    </p>
-                    <a 
-                      href="https://creativecommons.org/licenses/by/4.0/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="opacity-40 hover:opacity-100 transition-opacity"
-                    >
-                      <img 
-                        src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg" 
-                        alt="CC BY" 
-                        className="h-3 shadow-sm"
-                      />
-                    </a>
-                  </div>
-                </div>
+          <div className="flex flex-col items-center text-center gap-6 pt-4 pb-2 border-b border-white/10 mx-2">
+            {/* TOP: Logo and Name */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="p-3 bg-blue-600/20 rounded-2xl shadow-xl ring-1 ring-blue-500/30">
+                <Atom className="text-blue-400" size={32} />
               </div>
-              
-              <div className="flex gap-1.5 p-1 bg-white/5 rounded-xl border border-white/5">
-                {[
-                  { id: 'gl', flag: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Galicia.svg' },
-                  { id: 'en', flag: 'https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg' }
-                ].map(lang => (
-                  <button 
-                    key={lang.id}
-                    onClick={() => setLanguage(lang.id)}
-                    className={`p-1 rounded-lg transition-all ${language === lang.id ? 'bg-blue-600/30 ring-1 ring-blue-500/50' : 'opacity-40 hover:opacity-100'}`}
-                  >
-                    <img src={lang.flag} alt={lang.id} className="w-6 h-4 object-cover rounded-sm shadow-sm" />
-                  </button>
-                ))}
-              </div>
+              <h1 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 tracking-tighter">
+                {t('appTitle')}
+              </h1>
+            </div>
+
+            {/* MIDDLE: Flags */}
+            <div className="flex gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/5 shadow-inner">
+              {[
+                { id: 'gl', flag: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Galicia.svg' },
+                { id: 'en', flag: 'https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg' }
+              ].map(lang => (
+                <button 
+                  key={lang.id}
+                  onClick={() => setLanguage(lang.id)}
+                  className={`p-1.5 rounded-xl transition-all ${language === lang.id ? 'bg-blue-600/30 ring-1 ring-blue-500/50' : 'opacity-40 hover:opacity-100'}`}
+                >
+                  <img src={lang.flag} alt={lang.id} className="w-7 h-5 object-cover rounded shadow-sm" />
+                </button>
+              ))}
+            </div>
+
+            {/* BOTTOM: Copyright */}
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest opacity-80">
+                {t('copyright')}
+              </p>
+              <a 
+                href="https://creativecommons.org/licenses/by/4.0/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="opacity-40 hover:opacity-100 transition-opacity"
+              >
+                <img 
+                  src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg" 
+                  alt="CC BY" 
+                  className="h-4 shadow-sm brightness-150 contrast-125"
+                />
+              </a>
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-8 pt-2">
             {isomerGroups.map((group) => (
               <section key={group.id} className="flex flex-col gap-3">
-                <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 flex items-center gap-2">
+                <h3 className="text-[10px] font-bold text-slate-200 uppercase tracking-widest px-2 flex items-center gap-2">
                    <ChevronRight size={10} className="text-blue-500" /> {group.title[language]}
                 </h3>
                 <div className="flex flex-col gap-1">
@@ -192,7 +193,7 @@ export default function App() {
                     if (sub.subtypes) {
                       return (
                         <div key={sub.id} className="flex flex-col gap-2 mt-2">
-                          <h4 className="text-[9px] font-bold text-slate-600 uppercase tracking-wider px-4 flex items-center gap-2">
+                          <h4 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-4 flex items-center gap-2">
                             <span className="w-1 h-3 bg-slate-700 rounded-full" /> {sub.title[language]}
                           </h4>
                           <div className="flex flex-col gap-1 pl-3 border-l border-white/5 ml-4">
@@ -204,7 +205,7 @@ export default function App() {
                                   w-full flex items-center gap-3 px-3 py-1.5 rounded-xl transition-all text-left
                                   ${selectedGroup.id === nestedSub.id 
                                     ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
-                                    : 'hover:bg-white/5 text-slate-500 border border-transparent'}
+                                    : 'hover:bg-white/5 text-slate-300 border border-transparent'}
                                 `}
                               >
                                 {getGroupIcon(nestedSub.id)}
@@ -223,7 +224,7 @@ export default function App() {
                           w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-left
                           ${selectedGroup.id === sub.id 
                             ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
-                            : 'hover:bg-white/5 text-slate-400 border border-transparent'}
+                            : 'hover:bg-white/5 text-slate-200 border border-transparent'}
                         `}
                       >
                         {getGroupIcon(sub.id)}
@@ -237,7 +238,7 @@ export default function App() {
 
             {showCarbonSelector && (
               <section className="animate-in fade-in slide-in-from-left-2 duration-300">
-                <h2 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3 px-2">
+                <h2 className="text-[10px] font-semibold text-slate-200 uppercase tracking-widest mb-3 px-2">
                   {t('chainLength')}
                 </h2>
                 <div className="grid grid-cols-3 gap-2 p-1 bg-white/5 rounded-xl border border-white/5">
@@ -249,7 +250,7 @@ export default function App() {
                         py-1.5 rounded-lg text-xs font-bold transition-all
                         ${selectedCarbons === count 
                           ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40' 
-                          : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}
+                          : 'text-slate-300 hover:text-white hover:bg-white/10'}
                       `}
                     >
                       C{count}
@@ -367,7 +368,7 @@ export default function App() {
             >
               <Atom size={18} />
             </button>
-            {selectedGroup.id === 'estereoisomeria-optica' && (
+            {selectedGroup?.id === 'estereoisomeria-optica' && (
               <>
                 <div className="w-[1px] h-4 bg-white/10 mx-1" />
                 <button 
@@ -391,91 +392,105 @@ export default function App() {
         p-4 flex flex-col gap-4
       `}>
         <GlassPanel variant="heavy" className="flex-1 flex flex-col gap-6 overflow-hidden border-l border-white/10">
-          <div className="flex-none flex flex-col items-center text-center gap-2 pt-2">
-            <h2 className="text-4xl font-black text-white tracking-tighter mb-1">
-              {selectedIsomer.formula}
-            </h2>
-            <div className="px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-              {t('molecularFormula')}
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-8">
-            <section>
-              <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2 px-1">
-                <ImageIcon size={14} /> {t('twoDRepresentation')}
-              </h3>
-              <div className="bg-[#001529] rounded-2xl p-6 border border-white/10 aspect-square flex items-center justify-center overflow-hidden group relative shadow-2xl">
-                {selectedIsomer?.smiles ? (
-                  <img 
-                    src={`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/${encodeURIComponent(selectedIsomer.smiles)}/PNG`}
-                    alt={`${selectedIsomer.name[language]} 2D`} 
-                    className="max-w-full max-h-full transition-transform duration-500 group-hover:scale-105"
-                    style={{
-                      filter: 'invert(1) brightness(1.5) contrast(1.2)'
-                    }}
-                  />
-                ) : (
-                  <div className="flex flex-col items-center gap-2 text-slate-500">
-                    <FileCode2 size={40} className="opacity-20" />
-                    <span className="text-[10px] uppercase tracking-widest">{t('noData')}</span>
-                  </div>
-                )}
-              </div>
-            </section>
-
-            <section className="space-y-6 animate-fade-in" key={selectedIsomer.id}>
-              <div>
-                <h3 className="text-xl font-bold text-white mb-1 leading-tight">{selectedIsomer.name[language]}</h3>
-                <p className="text-xs font-medium text-blue-400 font-mono tracking-wide underline decoration-blue-500/30 underline-offset-4">
-                  {selectedIsomer.iupac}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-1 bg-white/5 p-3 rounded-xl border border-white/5">
-                  <div className="flex items-center gap-2 text-[9px] text-slate-500 uppercase tracking-widest font-bold">
-                    <Fingerprint size={12} className="text-slate-600" /> {t('casNumber')}
-                  </div>
-                  <div className="text-base font-mono text-slate-200">{selectedIsomer.cas}</div>
-                </div>
-
-                <div className="space-y-1 bg-white/5 p-3 rounded-xl border border-white/5">
-                  <div className="flex items-center gap-2 text-[9px] text-slate-500 uppercase tracking-widest font-bold">
-                    <FileCode2 size={12} className="text-slate-600" /> {t('smiles')}
-                  </div>
-                  <div className="text-xs font-mono text-slate-300 break-all bg-black/20 p-2 rounded-lg border border-white/5">
-                    {selectedIsomer.smiles}
-                  </div>
+          {selectedIsomer ? (
+            <>
+              <div className="flex-none flex flex-col items-center text-center gap-2 pt-2">
+                <h2 className="text-4xl font-black text-white tracking-tighter mb-1">
+                  {selectedIsomer.formula}
+                </h2>
+                <div className="px-3 py-1 bg-blue-500/10 rounded-full border border-blue-500/20 text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                  {t('molecularFormula')}
                 </div>
               </div>
 
-              <div className="space-y-4 pt-2">
-                {selectedIsomer.description?.[language] && (
-                  <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
-                    <h4 className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-2">
-                      <Info size={14} className="text-blue-500" /> {t('description')}
-                    </h4>
-                    <p className="text-xs text-slate-400 leading-relaxed italic">
-                      {selectedIsomer.description[language]}
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-8">
+                <section>
+                  <h3 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2 px-1">
+                    <ImageIcon size={14} /> {t('twoDRepresentation')}
+                  </h3>
+                  <div className="bg-[#001529] rounded-2xl p-6 border border-white/10 aspect-square flex items-center justify-center overflow-hidden group relative shadow-2xl">
+                    {selectedIsomer?.smiles ? (
+                      <img 
+                        src={`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/${encodeURIComponent(selectedIsomer.smiles)}/PNG`}
+                        alt={`${selectedIsomer.name[language]} 2D`} 
+                        className="max-w-full max-h-full transition-transform duration-500 group-hover:scale-105"
+                        style={{
+                          filter: 'invert(1) brightness(1.5) contrast(1.2)'
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 text-slate-500">
+                        <FileCode2 size={40} className="opacity-20" />
+                        <span className="text-[10px] uppercase tracking-widest">{t('noData')}</span>
+                      </div>
+                    )}
+                  </div>
+                </section>
+
+                <section className="space-y-6 animate-fade-in" key={selectedIsomer.id}>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1 leading-tight">{selectedIsomer.name[language]}</h3>
+                    <p className="text-xs font-medium text-blue-400 font-mono tracking-wide underline decoration-blue-500/30 underline-offset-4">
+                      {selectedIsomer.iupac}
                     </p>
                   </div>
-                )}
-              </div>
-            </section>
-          </div>
 
-          <div className="mt-auto pt-6 flex flex-col gap-3">
-             <a 
-              href={selectedIsomer.wikipediaUrl || `https://en.wikipedia.org/wiki/${selectedIsomer.iupac}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl transition-all shadow-lg shadow-blue-900/40 font-bold group text-sm"
-            >
-              <ExternalLink size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              {t('viewOnWikipedia')}
-            </a>
-          </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-1 bg-white/5 p-3 rounded-xl border border-white/5">
+                      <div className="flex items-center gap-2 text-[9px] text-slate-500 uppercase tracking-widest font-bold">
+                        <Fingerprint size={12} className="text-slate-600" /> {t('casNumber')}
+                      </div>
+                      <div className="text-base font-mono text-slate-200">{selectedIsomer.cas}</div>
+                    </div>
+
+                    <div className="space-y-1 bg-white/5 p-3 rounded-xl border border-white/5">
+                      <div className="flex items-center gap-2 text-[9px] text-slate-500 uppercase tracking-widest font-bold">
+                        <FileCode2 size={12} className="text-slate-600" /> {t('smiles')}
+                      </div>
+                      <div className="text-xs font-mono text-slate-300 break-all bg-black/20 p-2 rounded-lg border border-white/5">
+                        {selectedIsomer.smiles}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4 pt-2">
+                    {selectedIsomer.description?.[language] && (
+                      <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                        <h4 className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-2">
+                          <Info size={14} className="text-blue-500" /> {t('description')}
+                        </h4>
+                        <p className="text-xs text-slate-400 leading-relaxed italic">
+                          {selectedIsomer.description[language]}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              </div>
+
+              <div className="mt-auto pt-6 flex flex-col gap-3">
+                 <a 
+                  href={selectedIsomer.wikipediaUrl || `https://en.wikipedia.org/wiki/${selectedIsomer.iupac}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl transition-all shadow-lg shadow-blue-900/40 font-bold group text-sm"
+                >
+                  <ExternalLink size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  {t('viewOnWikipedia')}
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 gap-4 border border-dashed border-white/10 rounded-3xl m-2">
+              <div className="w-16 h-16 bg-blue-600/10 rounded-full flex items-center justify-center">
+                <Atom className="text-blue-500/50 animate-pulse" size={32} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-400 mb-1">{t('selectIsomer')}</h3>
+                <p className="text-[10px] text-slate-500 uppercase tracking-widest">{t('startExploring')}</p>
+              </div>
+            </div>
+          )}
         </GlassPanel>
       </aside>
 
