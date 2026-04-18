@@ -79,7 +79,7 @@ function MirrorPlane() {
 }
 
 // Internal scene component to handle auto-rotation and events
-function SceneContent({ molecule, autoRotate, mirrorMode }) {
+function SceneContent({ molecule, autoRotate, mirrorMode, showHydrogens }) {
   const groupRef = useRef();
   const { camera } = useThree();
 
@@ -101,17 +101,50 @@ function SceneContent({ molecule, autoRotate, mirrorMode }) {
 
   // Center the molecule by calculating its bounding center
   const centerPos = useMemo(() => {
-    if (!molecule.atoms.length) return [0, 0, 0];
+    if (!molecule || !molecule.atoms || molecule.atoms.length === 0) return [0, 0, 0];
     const sum = molecule.atoms.reduce((acc, atom) => [acc[0] + atom.pos[0], acc[1] + atom.pos[1], acc[2] + atom.pos[2]], [0, 0, 0]);
     return sum.map(v => v / molecule.atoms.length);
   }, [molecule]);
 
-  const mirroredMolecule = useMemo(() => {
+  const filteredMolecule = useMemo(() => {
+    if (!molecule || !molecule.atoms) return { atoms: [], bonds: [] };
+    if (showHydrogens) return molecule;
+    
+    // Create a mapping of old indices to new indices for atoms
+    const atomIndexMap = [];
+    let nextIndex = 0;
+    
+    const filteredAtoms = molecule.atoms.filter((atom, i) => {
+      const isVisible = atom.element !== 'H';
+      if (isVisible) {
+        atomIndexMap[i] = nextIndex++;
+      } else {
+        atomIndexMap[i] = -1;
+      }
+      return isVisible;
+    });
+    
+    const filteredBonds = (molecule.bonds || [])
+      .filter(bond => atomIndexMap[bond.start] !== -1 && atomIndexMap[bond.end] !== -1)
+      .map(bond => ({
+        ...bond,
+        start: atomIndexMap[bond.start],
+        end: atomIndexMap[bond.end]
+      }));
+      
     return {
       ...molecule,
-      atoms: molecule.atoms.map(atom => ({ ...atom, pos: [-atom.pos[0], atom.pos[1], atom.pos[2]] }))
+      atoms: filteredAtoms,
+      bonds: filteredBonds
     };
-  }, [molecule]);
+  }, [molecule, showHydrogens]);
+
+  const mirroredMolecule = useMemo(() => {
+    return {
+      ...filteredMolecule,
+      atoms: filteredMolecule.atoms.map(atom => ({ ...atom, pos: [-atom.pos[0], atom.pos[1], atom.pos[2]] }))
+    };
+  }, [filteredMolecule]);
 
   const renderMolecule = (mol, offset = [0, 0, 0], scale = 1) => (
     <group position={offset}>
@@ -133,18 +166,18 @@ function SceneContent({ molecule, autoRotate, mirrorMode }) {
     <group ref={groupRef}>
       {mirrorMode ? (
         <>
-          {renderMolecule(molecule, [2, 0, 0])}
+          {renderMolecule(filteredMolecule, [2, 0, 0])}
           {renderMolecule(mirroredMolecule, [-2, 0, 0])}
           <MirrorPlane />
         </>
       ) : (
-        renderMolecule(molecule)
+        renderMolecule(filteredMolecule)
       )}
     </group>
   );
 }
 
-export default function MoleculeViewer({ molecule, autoRotate, mirrorMode }) {
+export default function MoleculeViewer({ molecule, autoRotate, mirrorMode, showHydrogens }) {
   return (
     <Canvas dpr={[1, 2]} shadows>
       <PerspectiveCamera makeDefault position={[5, 5, 5]} fov={40} />
@@ -158,7 +191,7 @@ export default function MoleculeViewer({ molecule, autoRotate, mirrorMode }) {
       <Environment preset="city" />
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
 
-      <SceneContent molecule={molecule} autoRotate={autoRotate} mirrorMode={mirrorMode} />
+      <SceneContent molecule={molecule} autoRotate={autoRotate} mirrorMode={mirrorMode} showHydrogens={showHydrogens} />
 
       <OrbitControls 
         minDistance={2} 

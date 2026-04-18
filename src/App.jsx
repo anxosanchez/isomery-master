@@ -37,11 +37,16 @@ export default function App() {
   // Flatten subtypes for selection logic while keeping parents for UI
   const allSubtypes = useMemo(() => {
     const flattened = [];
-    isomerGroups.forEach(parent => {
-      parent.subtypes.forEach(sub => {
-        flattened.push({ ...sub, parentTitle: parent.title });
+    const flatten = (items, parentTitle = null) => {
+      items.forEach(item => {
+        if (item.subtypes) {
+          flatten(item.subtypes, item.title);
+        } else if (item.isomers) {
+          flattened.push({ ...item, parentTitle });
+        }
       });
-    });
+    };
+    flatten(isomerGroups);
     return flattened;
   }, []);
 
@@ -53,19 +58,22 @@ export default function App() {
   const [showRightPanel, setShowRightPanel] = useState(true);
   const [mirrorMode, setMirrorMode] = useState(false);
   const [showGuide, setShowGuide] = useState(true);
+  const [showHydrogens, setShowHydrogens] = useState(true);
 
   // Filter isomers based on selected group AND carbon count (if applicable)
   const filteredIsomers = useMemo(() => {
+    if (!selectedGroup || !selectedGroup.isomers) return [];
+    
     const needsCarbonFilter = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
     
     if (needsCarbonFilter) {
       const filtered = selectedGroup.isomers.filter(iso => iso.carbons === selectedCarbons);
-      return filtered;
+      return filtered.length > 0 ? filtered : [selectedGroup.isomers[0]];
     }
     return selectedGroup.isomers;
   }, [selectedGroup, selectedCarbons]);
 
-  const selectedIsomer = filteredIsomers[selectedIsomerIndex] || filteredIsomers[0] || selectedGroup.isomers[0];
+  const selectedIsomer = filteredIsomers[selectedIsomerIndex] || filteredIsomers[0] || (selectedGroup?.isomers ? selectedGroup.isomers[0] : null);
   
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
@@ -180,21 +188,49 @@ export default function App() {
                    <ChevronRight size={10} className="text-blue-500" /> {group.title[language]}
                 </h3>
                 <div className="flex flex-col gap-1">
-                  {group.subtypes.map((sub) => (
-                    <button
-                      key={sub.id}
-                      onClick={() => handleGroupSelect(sub)}
-                      className={`
-                        w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-left
-                        ${selectedGroup.id === sub.id 
-                          ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
-                          : 'hover:bg-white/5 text-slate-400 border border-transparent'}
-                      `}
-                    >
-                      {getGroupIcon(sub.id)}
-                      <span className="text-xs font-medium">{sub.title[language]}</span>
-                    </button>
-                  ))}
+                  {group.subtypes.map((sub) => {
+                    if (sub.subtypes) {
+                      return (
+                        <div key={sub.id} className="flex flex-col gap-2 mt-2">
+                          <h4 className="text-[9px] font-bold text-slate-600 uppercase tracking-wider px-4 flex items-center gap-2">
+                            <span className="w-1 h-3 bg-slate-700 rounded-full" /> {sub.title[language]}
+                          </h4>
+                          <div className="flex flex-col gap-1 pl-3 border-l border-white/5 ml-4">
+                            {sub.subtypes.map((nestedSub) => (
+                              <button
+                                key={nestedSub.id}
+                                onClick={() => handleGroupSelect(nestedSub)}
+                                className={`
+                                  w-full flex items-center gap-3 px-3 py-1.5 rounded-xl transition-all text-left
+                                  ${selectedGroup.id === nestedSub.id 
+                                    ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
+                                    : 'hover:bg-white/5 text-slate-500 border border-transparent'}
+                                `}
+                              >
+                                {getGroupIcon(nestedSub.id)}
+                                <span className="text-[11px] font-medium">{nestedSub.title[language]}</span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <button
+                        key={sub.id}
+                        onClick={() => handleGroupSelect(sub)}
+                        className={`
+                          w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-left
+                          ${selectedGroup.id === sub.id 
+                            ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
+                            : 'hover:bg-white/5 text-slate-400 border border-transparent'}
+                        `}
+                      >
+                        {getGroupIcon(sub.id)}
+                        <span className="text-xs font-medium">{sub.title[language]}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </section>
             ))}
@@ -256,6 +292,7 @@ export default function App() {
             molecule={selectedIsomer} 
             autoRotate={autoRotate}
             mirrorMode={mirrorMode}
+            showHydrogens={showHydrogens}
           />
           
           {/* INFO GUIDE PANEL (Bottom Center) */}
@@ -322,6 +359,14 @@ export default function App() {
             >
               <RotateCcw size={18} />
             </button>
+            <div className="w-[1px] h-4 bg-white/10 mx-1" />
+            <button 
+              onClick={() => setShowHydrogens(!showHydrogens)}
+              className={`p-2 rounded-lg transition-colors ${showHydrogens ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-white/5 text-slate-400'}`}
+              title={showHydrogens ? t('hideHydrogens') : t('showHydrogens')}
+            >
+              <Atom size={18} />
+            </button>
             {selectedGroup.id === 'estereoisomeria-optica' && (
               <>
                 <div className="w-[1px] h-4 bg-white/10 mx-1" />
@@ -361,14 +406,21 @@ export default function App() {
                 <ImageIcon size={14} /> {t('twoDRepresentation')}
               </h3>
               <div className="bg-[#001529] rounded-2xl p-6 border border-white/10 aspect-square flex items-center justify-center overflow-hidden group relative shadow-2xl">
-                <img 
-                  src={`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${selectedIsomer.pubchemCid}/PNG`}
-                  alt={`${selectedIsomer.name[language]} 2D`} 
-                  className="max-w-full max-h-full transition-transform duration-500 group-hover:scale-105"
-                  style={{
-                    filter: 'invert(1) brightness(2) contrast(1.5) drop-shadow(0px 0px 0.75px white) drop-shadow(0px 0px 0.75px white)'
-                  }}
-                />
+                {selectedIsomer?.smiles ? (
+                  <img 
+                    src={`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/${encodeURIComponent(selectedIsomer.smiles)}/PNG`}
+                    alt={`${selectedIsomer.name[language]} 2D`} 
+                    className="max-w-full max-h-full transition-transform duration-500 group-hover:scale-105"
+                    style={{
+                      filter: 'invert(1) brightness(1.5) contrast(1.2)'
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-slate-500">
+                    <FileCode2 size={40} className="opacity-20" />
+                    <span className="text-[10px] uppercase tracking-widest">{t('noData')}</span>
+                  </div>
+                )}
               </div>
             </section>
 
@@ -435,6 +487,7 @@ export default function App() {
         >
           <Info size={20} />
         </button>
+      )}
     </div>
   );
 }

@@ -38,6 +38,8 @@ export const translations = {
     aromatica: "Aromática",
     ciclos: "Ciclos",
     showTheory: "Ver Teoría",
+    showHydrogens: "Ver Hidróxenos",
+    hideHydrogens: "Ocultar Hidróxenos",
     // Molecule Names
     "n-butane": "n-Butano",
     "isobutane": "Isobutano",
@@ -114,6 +116,8 @@ export const translations = {
     aromatica: "Aromatic",
     ciclos: "Cyclic",
     showTheory: "Show Theory",
+    showHydrogens: "Show Hydrogens",
+    hideHydrogens: "Hide Hydrogens",
     // Molecule Names
     "n-butane": "n-Butane",
     "isobutane": "Isobutane",
