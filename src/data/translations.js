@@ -57,7 +57,8 @@ export const translations = {
     "m-xylene": "meta-xileno",
     "p-xylene": "para-xileno",
     "cis-1-2-dichlorocyclohexane": "cis-1,2-diclorociclohexano",
-    "trans-1-2-dichlorocyclohexane": "trans-1,2-diclorociclohexano"
+    "trans-1-2-dichlorocyclohexane": "trans-1,2-diclorociclohexano",
+    showTheory: "Ver Teoría"
   },
   en: {
     appTitle: "Isomery 3D",
@@ -117,6 +118,7 @@ export const translations = {
     "m-xylene": "m-xylene",
     "p-xylene": "p-xylene",
     "cis-1-2-dichlorocyclohexane": "cis-1,2-dichlorocyclohexane",
-    "trans-1-2-dichlorocyclohexane": "trans-1,2-dichlorocyclohexane"
+    "trans-1-2-dichlorocyclohexane": "trans-1,2-dichlorocyclohexane",
+    showTheory: "Show Theory"
   }
 };

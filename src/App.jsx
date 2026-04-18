@@ -20,7 +20,11 @@ import {
   Image as ImageIcon,
   Languages,
   Hexagon,
-  Combine
+  Combine,
+  ChevronDown,
+  ChevronUp,
+  FlaskConical,
+  Spline
 } from 'lucide-react';
 import GlassPanel from './components/GlassPanel';
 import MoleculeViewer from './components/MoleculeViewer';
@@ -30,17 +34,28 @@ import { useLanguage } from './components/LanguageContext';
 export default function App() {
   const { language, setLanguage, t } = useLanguage();
   
-  const [selectedGroup, setSelectedGroup] = useState(isomerGroups[0]);
+  // Flatten subtypes for selection logic while keeping parents for UI
+  const allSubtypes = useMemo(() => {
+    const flattened = [];
+    isomerGroups.forEach(parent => {
+      parent.subtypes.forEach(sub => {
+        flattened.push({ ...sub, parentTitle: parent.title });
+      });
+    });
+    return flattened;
+  }, []);
+
+  const [selectedGroup, setSelectedGroup] = useState(allSubtypes[0]);
   const [selectedCarbons, setSelectedCarbons] = useState(4);
   const [selectedIsomerIndex, setSelectedIsomerIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
   const [showSidebar, setShowSidebar] = useState(true);
   const [showRightPanel, setShowRightPanel] = useState(true);
   const [mirrorMode, setMirrorMode] = useState(false);
+  const [showGuide, setShowGuide] = useState(true);
 
   // Filter isomers based on selected group AND carbon count (if applicable)
   const filteredIsomers = useMemo(() => {
-    // Categories that use the carbon filter
     const needsCarbonFilter = ['estructural-cadea', 'estructural-posicion', 'estereoisomeria-geometrica'].includes(selectedGroup.id);
     
     if (needsCarbonFilter) {
@@ -56,7 +71,6 @@ export default function App() {
     setSelectedGroup(group);
     setSelectedIsomerIndex(0);
     
-    // Automatically set a sensible carbon count if current one has no isomers in this group
     const availableCarbons = [...new Set(group.isomers.map(iso => iso.carbons))].filter(Boolean);
     if (availableCarbons.length > 0 && !availableCarbons.includes(selectedCarbons)) {
       setSelectedCarbons(availableCarbons[0]);
@@ -77,16 +91,15 @@ export default function App() {
     return counts.length > 0 ? counts : [4, 5, 6];
   }, [selectedGroup]);
 
-  // Map group IDs to specific icons
   const getGroupIcon = (id) => {
     switch(id) {
       case 'estructural-cadea': return <Database size={16} />;
       case 'estructural-posicion': return <Layers size={16} />;
-      case 'isomería-aromatica': return <Hexagon size={16} className="text-yellow-400" />;
-      case 'isomería-ciclica': return <Combine size={16} className="text-emerald-400" />;
+      case 'estructural-funcion': return <FlaskConical size={16} />;
       case 'estereoisomeria-geometrica': return <Box size={16} />;
       case 'estereoisomeria-optica': return <Dna size={16} />;
-      case 'isomería-conformacional': return <RotateCcw size={16} />;
+      case 'estereoisomeria-conformacional': return <RotateCcw size={16} />;
+      case 'estereoisomeria-configuracional': return <Spline size={16} />;
       default: return <Atom size={16} />;
     }
   };
@@ -144,53 +157,47 @@ export default function App() {
               </div>
               
               <div className="flex gap-1.5 p-1 bg-white/5 rounded-xl border border-white/5">
-                <button 
-                  onClick={() => setLanguage('gl')}
-                  className={`p-1 rounded-lg transition-all ${language === 'gl' ? 'bg-blue-600/30 ring-1 ring-blue-500/50' : 'opacity-40 hover:opacity-100'}`}
-                  title="Galego"
-                >
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Galicia.svg" alt="GL" className="w-6 h-4 object-cover rounded-sm shadow-sm" />
-                </button>
-                <button 
-                  onClick={() => setLanguage('en')}
-                  className={`p-1 rounded-lg transition-all ${language === 'en' ? 'bg-blue-600/30 ring-1 ring-blue-500/50' : 'opacity-40 hover:opacity-100'}`}
-                  title="English"
-                >
-                  <img src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" alt="EN" className="w-6 h-4 object-cover rounded-sm shadow-sm" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="px-2">
-              <p className="text-base font-semibold text-slate-200 tracking-tight leading-tight">
-                {t('appSubtitle')}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-6">
-            <section>
-              <h2 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3 px-2">
-                {t('typesTitle')}
-              </h2>
-              <div className="flex flex-col gap-1">
-                {isomerGroups.map((group) => (
-                  <button
-                    key={group.id}
-                    onClick={() => handleGroupSelect(group)}
-                    className={`
-                      w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all
-                      ${selectedGroup.id === group.id 
-                        ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
-                        : 'hover:bg-white/5 text-slate-400 border border-transparent'}
-                    `}
+                {[
+                  { id: 'gl', flag: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Galicia.svg' },
+                  { id: 'en', flag: 'https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg' }
+                ].map(lang => (
+                  <button 
+                    key={lang.id}
+                    onClick={() => setLanguage(lang.id)}
+                    className={`p-1 rounded-lg transition-all ${language === lang.id ? 'bg-blue-600/30 ring-1 ring-blue-500/50' : 'opacity-40 hover:opacity-100'}`}
                   >
-                    {getGroupIcon(group.id)}
-                    <span className="text-xs font-medium">{group.title[language]}</span>
+                    <img src={lang.flag} alt={lang.id} className="w-6 h-4 object-cover rounded-sm shadow-sm" />
                   </button>
                 ))}
               </div>
-            </section>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-8 pt-2">
+            {isomerGroups.map((group) => (
+              <section key={group.id} className="flex flex-col gap-3">
+                <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 flex items-center gap-2">
+                   <ChevronRight size={10} className="text-blue-500" /> {group.title[language]}
+                </h3>
+                <div className="flex flex-col gap-1">
+                  {group.subtypes.map((sub) => (
+                    <button
+                      key={sub.id}
+                      onClick={() => handleGroupSelect(sub)}
+                      className={`
+                        w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-left
+                        ${selectedGroup.id === sub.id 
+                          ? 'bg-blue-600/20 text-blue-300 border border-blue-500/30' 
+                          : 'hover:bg-white/5 text-slate-400 border border-transparent'}
+                      `}
+                    >
+                      {getGroupIcon(sub.id)}
+                      <span className="text-xs font-medium">{sub.title[language]}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
 
             {showCarbonSelector && (
               <section className="animate-in fade-in slide-in-from-left-2 duration-300">
@@ -220,7 +227,7 @@ export default function App() {
               <h2 className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3 px-2">
                 {t('isomersTitle')}
               </h2>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-2 pb-10">
                 {filteredIsomers.map((isomer, idx) => (
                   <button
                     key={isomer.id}
@@ -236,9 +243,6 @@ export default function App() {
                     <div className="text-[10px] opacity-60 mt-0.5">{isomer.formula}</div>
                   </button>
                 ))}
-                {filteredIsomers.length === 0 && (
-                  <p className="px-2 text-xs text-slate-600 italic">No data selected.</p>
-                )}
               </div>
             </section>
           </div>
@@ -246,13 +250,59 @@ export default function App() {
       </aside>
 
       {/* MAIN VIEW */}
-      <main className="flex-1 relative flex flex-col">
-        <div className="flex-1 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden">
+      <main className="flex-1 relative flex flex-col overflow-hidden">
+        <div className="flex-1 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden relative">
           <MoleculeViewer 
             molecule={selectedIsomer} 
             autoRotate={autoRotate}
             mirrorMode={mirrorMode}
           />
+          
+          {/* INFO GUIDE PANEL (Bottom Center) */}
+          <div className={`
+             absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-40
+             transition-all duration-500 ease-in-out
+             ${showGuide ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'}
+          `}>
+            <GlassPanel variant="heavy" className="p-5 relative border border-white/10 shadow-2xl">
+              <button 
+                onClick={() => setShowGuide(false)}
+                className="absolute top-3 right-3 p-1 hover:bg-white/10 rounded-full transition-colors text-slate-500 hover:text-white"
+              >
+                <X size={16} />
+              </button>
+              
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-blue-600/20 rounded-2xl text-blue-400 shrink-0">
+                  <Info size={24} />
+                </div>
+                <div className="space-y-2 pr-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">
+                       {selectedGroup.parentTitle?.[language] || t('description')}
+                    </span>
+                    <ChevronRight size={10} className="text-slate-600" />
+                    <h4 className="text-sm font-bold text-white tracking-tight">
+                      {selectedGroup.title[language]}
+                    </h4>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed font-medium line-clamp-4 hover:line-clamp-none transition-all cursor-help">
+                    {selectedGroup.description[language]}
+                  </p>
+                </div>
+              </div>
+            </GlassPanel>
+          </div>
+
+          {!showGuide && (
+             <button 
+                onClick={() => setShowGuide(true)}
+                className="absolute bottom-6 left-4 z-40 p-3 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 rounded-full text-blue-400 shadow-xl backdrop-blur-md transition-all animate-bounce"
+                title={t('showTheory')}
+             >
+                <Info size={20} />
+             </button>
+          )}
         </div>
 
         <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-30">
@@ -359,16 +409,6 @@ export default function App() {
                     </p>
                   </div>
                 )}
-                {!selectedIsomer.description?.[language] && selectedGroup.description?.[language] && (
-                   <div className="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
-                    <h4 className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mb-2">
-                      <Info size={14} className="text-blue-500" /> {t('description')}
-                    </h4>
-                    <p className="text-xs text-slate-400 leading-relaxed italic">
-                      {selectedGroup.description[language]}
-                    </p>
-                  </div>
-                )}
               </div>
             </section>
           </div>
@@ -395,7 +435,6 @@ export default function App() {
         >
           <Info size={20} />
         </button>
-      )}
     </div>
   );
 }
